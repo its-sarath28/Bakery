@@ -1,6 +1,7 @@
 package com.backery.main.Service;
 
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.razorpay.Order;
@@ -10,8 +11,11 @@ import com.razorpay.Utils;
 @Service
 public class PaymentService {
 
-    private final String key_id = "";
-    private final String key_secret = "";
+    @Value("${razorpay.key_id}")
+    private String key_id;
+
+    @Value("${razorpay.key_secret}")
+    private String key_secret;
 
     public String createRazorpayOrder(double amount) throws Exception {
         RazorpayClient razorpayClient = new RazorpayClient(key_id, key_secret);

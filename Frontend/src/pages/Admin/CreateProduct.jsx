@@ -11,17 +11,13 @@ const CreateProduct = () => {
     product_name: "",
     description: "",
     price: "",
-    food_type: "VEG",
-    availability: true,
+    product_image: "",
+    availability: null,
   });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProductData({ ...productData, [name]: value });
-  };
-
-  const handleSelectChange = (e) => {
-    setProductData({ ...productData, food_type: e.target.value });
   };
 
   const handleRadioChange = (e) => {
@@ -58,69 +54,86 @@ const CreateProduct = () => {
   };
 
   return (
-    <div>
-      <form onSubmit={handleCreateProduct}>
-        <div>
+    <div className="h-[90vh] flex flex-col items-center justify-center">
+      <form
+        onSubmit={handleCreateProduct}
+        className=" max-w-[600px] w-full p-4"
+      >
+        <div className="mb-[10px]">
           <input
             type="text"
             name="product_name"
-            className="bg-[#333] text-[#eee] mb-[15px]"
+            className="bg-[#bababa] mb-[15px] w-full p-3 rounded text-[#333] placeholder:text-black outline-none hover:outline-none"
             placeholder="Product name"
             value={productData.product_name}
             onChange={handleInputChange}
           />
         </div>
-        <div>
-          <input
-            type="text"
-            name="description"
-            className="bg-[#333] text-[#eee] mb-[15px]"
-            placeholder="Description"
-            value={productData.description}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div>
+
+        <div className="mb-[10px]">
           <input
             type="text"
             name="price"
-            className="bg-[#333] text-[#eee] mb-[15px]"
+            className="bg-[#bababa] mb-[15px] w-full p-3 rounded text-[#333] placeholder:text-black outline-none hover:outline-none"
             placeholder="Price"
             value={productData.price}
             onChange={handleInputChange}
           />
         </div>
-        <div>
-          <select
-            name="food_type"
-            value={productData.food_type}
-            onChange={handleSelectChange}
-            className="bg-[#333] text-[#eee] mb-[15px]"
+
+        <div className="mb-[10px]">
+          <input
+            type="url"
+            name="product_image"
+            className="bg-[#bababa] mb-[15px] w-full p-3 rounded text-[#333] placeholder:text-black outline-none hover:outline-none"
+            placeholder="Product image URL"
+            value={productData.product_image}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="mb-[20px] flex flex-col sm:flex-row gap-[20px] sm:gap-[100px] cursor-pointer">
+          <div className="flex items-center gap-[10px]">
+            <input
+              type="radio"
+              name="availability"
+              value={true}
+              checked={productData.availability === true}
+              onChange={handleRadioChange}
+            />{" "}
+            <label htmlFor="">Available</label>
+          </div>
+          <div className="flex item-center gap-[10px]">
+            <input
+              type="radio"
+              name="availability"
+              value={false}
+              checked={productData.availability === false}
+              onChange={handleRadioChange}
+            />{" "}
+            <label htmlFor="">Out-of-Stock</label>
+          </div>
+        </div>
+
+        <div className="mb-[10px]">
+          <textarea
+            name="description"
+            className="bg-[#bababa] mb-[15px] w-full p-3 rounded text-[#333] placeholder:text-black outline-none hover:outline-none resize-y"
+            placeholder="Description"
+            rows={5}
+            value={productData.description}
+            onChange={handleInputChange}
+          ></textarea>
+        </div>
+
+        <div className="text-center">
+          <button
+            type="submit"
+            className="bg-green-500 py-[5px] md:py-2 px-3 md:px-6 text-white text-[14px] md:text-[18px] font-[600] h-[44px] rounded-[10px] md:rounded-[50px]"
           >
-            <option value="VEG">VEG</option>
-            <option value="NON_VEG">NON_VEG</option>
-            <option value="CONTAINS_EGG">CONTAINS_EGG</option>
-          </select>
+            Create Product
+          </button>
         </div>
-        <div>
-          <input
-            type="radio"
-            name="availability"
-            value={true}
-            checked={productData.availability === true}
-            onChange={handleRadioChange}
-          />{" "}
-          <label htmlFor="">Available</label>
-          <input
-            type="radio"
-            name="availability"
-            value={false}
-            checked={productData.availability === false}
-            onChange={handleRadioChange}
-          />{" "}
-          <label htmlFor="">Not-available</label>
-        </div>
-        <button type="submit">Create Product</button>
       </form>
     </div>
   );

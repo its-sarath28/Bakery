@@ -41,18 +41,6 @@ public class MainApplication {
 				admin.setRole(Role.ROLE_ADMIN);
 				userRepository.save(admin);
 			}
-
-			if (userRepository.findByEmail("manager@gmail.com").isEmpty()) {
-				User manager = new User();
-
-				manager.setFull_name("Chief Manager");
-				manager.setEmail("manager@gmail.com");
-				manager.setPassword(passwordEncoder.encode("Password"));
-				manager.setCreated_at(LocalDateTime.now());
-				manager.setRole(Role.ROLE_MANAGER);
-				userRepository.save(manager);
-			}
-
 		};
 	}
 

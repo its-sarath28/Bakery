@@ -10,7 +10,6 @@ import com.backery.main.DTO.ProductDTO;
 import com.backery.main.Exception.EntityAlreadyExistsException;
 import com.backery.main.Exception.NotFoundException;
 import com.backery.main.Model.Product;
-import com.backery.main.Model.User;
 import com.backery.main.Repository.ProductRepository;
 import com.backery.main.Response.MessageResponse;
 
@@ -22,8 +21,6 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    private final UserService userService;
-
     public MessageResponse createProduct(ProductDTO product) throws Exception {
 
         Optional<Product> existingProduct = productRepository
@@ -33,17 +30,14 @@ public class ProductService {
             throw new EntityAlreadyExistsException("Product already exists");
         }
 
-        User user = userService.getCurrentUser();
-
         Product newProduct = new Product();
 
         newProduct.setProduct_name(product.getProduct_name());
         newProduct.setDescription(product.getDescription());
         newProduct.setPrice(product.getPrice());
+        newProduct.setProduct_image(product.getProduct_image());
         newProduct.setCreated_at(LocalDateTime.now());
-        newProduct.setFood_type(product.getFood_type());
         newProduct.setAvailability(product.getAvailability());
-        newProduct.setUser(user);
 
         productRepository.save(newProduct);
 
@@ -68,7 +62,7 @@ public class ProductService {
         productToUpdate.setProduct_name(product.getProduct_name());
         productToUpdate.setDescription(product.getDescription());
         productToUpdate.setPrice(product.getPrice());
-        productToUpdate.setFood_type(product.getFood_type());
+        productToUpdate.setProduct_image(product.getProduct_image());
         productToUpdate.setAvailability(product.getAvailability());
 
         productRepository.save(productToUpdate);

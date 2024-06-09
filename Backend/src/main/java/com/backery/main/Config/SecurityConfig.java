@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserDetailsServiceImpl adminDetailsServiceImpl;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
 
     private final JwtAuthFilter jwtAuthFilter;
 
@@ -40,12 +40,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(
-                        req -> req.requestMatchers("/api/v1/auth/**")
+                        req -> req
+                                .requestMatchers("/api/v1/auth/**", "/api/v1/products", "/api/v1/products/{productId}")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())
                 .userDetailsService(
-                        adminDetailsServiceImpl)
+                        userDetailsServiceImpl)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

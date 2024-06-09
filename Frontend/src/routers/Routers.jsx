@@ -9,6 +9,8 @@ import Cart from "../pages/User/Cart";
 import Dashboard from "../pages/Admin/Dashboard";
 import ProtectedRoutes from "./ProtectedRoutes";
 import CreateProduct from "../pages/Admin/CreateProduct";
+import UpdateProduct from "../pages/Admin/UpdateProduct";
+import MyOrders from "../pages/User/MyOrders";
 
 const Routers = () => {
   return (
@@ -19,12 +21,13 @@ const Routers = () => {
       <Route path="/auth/logout" element={<Logout />} />
       <Route path="/products/:productId" element={<ProductDetail />} />
       <Route path="/users/cart" element={<Cart />} />
+      <Route path="/orders/my-orders" element={<MyOrders />} />
 
       {/* Admin & Manager */}
       <Route
         path="/admin/dashboard"
         element={
-          <ProtectedRoutes allowedRoutes={["ROLE_ADMIN", "ROLE_MANAGER"]}>
+          <ProtectedRoutes allowedRoutes={["ROLE_ADMIN"]}>
             <Dashboard />
           </ProtectedRoutes>
         }
@@ -33,8 +36,17 @@ const Routers = () => {
       <Route
         path="/admin/products/create-product"
         element={
-          <ProtectedRoutes allowedRoutes={["ROLE_ADMIN", "ROLE_MANAGER"]}>
+          <ProtectedRoutes allowedRoutes={["ROLE_ADMIN"]}>
             <CreateProduct />
+          </ProtectedRoutes>
+        }
+      />
+
+      <Route
+        path="/admin/products/update-product/:productId"
+        element={
+          <ProtectedRoutes allowedRoutes={["ROLE_ADMIN"]}>
+            <UpdateProduct />
           </ProtectedRoutes>
         }
       />

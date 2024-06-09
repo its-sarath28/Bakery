@@ -1,6 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { UserContext } from "../../context/UserContext";
+import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -9,6 +11,7 @@ const Cart = () => {
   const [totalSum, setTotalSum] = useState(0);
   const { isLoggedIn } = useContext(UserContext);
   const token = isLoggedIn;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCartItems = async () => {
@@ -23,7 +26,6 @@ const Cart = () => {
         if (response.status === 200) {
           setCartItems(response.data.items);
           setTotalSum(response.data.totalSum);
-          console.log(response.data);
         }
       } catch (err) {
         console.error("Failed to fetch cart items", err);
@@ -31,7 +33,35 @@ const Cart = () => {
     };
 
     fetchCartItems();
-  }, [token, totalSum]);
+  }, [token]);
+
+  const removeProduct = async (productId) => {
+    try {
+      const response = await axios.delete(`${BASE_URL}/cart/remove-product`, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          productId: productId,
+        },
+      });
+      if (response.status === 200) {
+        setCartItems((prevItems) =>
+          prevItems.filter((item) => item.product.id !== productId)
+        );
+        setTotalSum((prevTotal) => {
+          const productPrice = cartItems.find(
+            (item) => item.product.id === productId
+          ).product.price;
+          return prevTotal - productPrice;
+        });
+        toast.success("Product removed successfully");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const initiatePayment = async (e) => {
     e.preventDefault();
@@ -49,22 +79,14 @@ const Cart = () => {
       );
 
       const data = response.data;
-      console.log(
-        "Received Razorpay Order ID from backend:",
-        data.razorpayOrderId
-      );
       const options = {
-        key: "",
+        // key: "",
         amount: data.totalAmount * 100,
         currency: "INR",
-        name: "Backery",
+        name: "Planter",
         description: "Test Transaction",
         order_id: data.razorpayOrderId,
         handler: async (response) => {
-          console.log(
-            "Received Razorpay Order ID in handler:",
-            response.razorpay_order_id
-          );
           try {
             const verifyResponse = await axios.post(
               `${BASE_URL}/order/verify-payment`,
@@ -83,23 +105,25 @@ const Cart = () => {
             );
 
             if (verifyResponse.status === 200) {
-              alert("Payment successful!");
+              navigate("/");
+              toast.success("Order placed successfully");
             } else {
               alert("Payment verification failed!");
+              toast.error("Error while placing order");
             }
           } catch (error) {
             console.error("Payment verification failed");
-            console.error(error);
+            alert("Payment verification failed!");
           }
         },
-        // prefill: {
-        //   name: "",
-        //   email: "",
-        //   contact: "",
-        // },
-        // notes: {
-        //   address: "",
-        // },
+        prefill: {
+          name: "",
+          email: "",
+          contact: "",
+        },
+        notes: {
+          address: "",
+        },
         theme: {
           color: "#3399cc",
         },
@@ -116,29 +140,75 @@ const Cart = () => {
 
   return (
     <div>
-      <h1>Your Cart</h1>
+      <h1 className="text-center my-[30px] text-[26px] font-[600]">
+        Your Cart
+      </h1>
       {cartItems.length === 0 ? (
-        <p>Your cart is empty</p>
+        <div className="h-[65vh] flex items-center justify-center">
+          <p className="text-center">Your cart is empty</p>
+        </div>
       ) : (
-        cartItems.map((item) => (
-          <div key={item.product.id} className="cart-item">
-            <h2>{item.product.product_name}</h2>
-            <p>Description: {item.product.description}</p>
-            <p>Price: {item.product.price}</p>
-            <p>Quantity: {item.quantity}</p>
-            <p>
-              Type:{" "}
-              {item.product.food_type === "VEG"
-                ? "Vegetarian"
-                : "Non Vegetarian"}
-            </p>
-            <p>{item.product.availability ? "Available" : "Not Available"}</p>
-          </div>
-        ))
-      )}
+        <div className="grid md:grid-cols-4 gap-[20px] px-[20px]">
+          <div className="md:col-span-3">
+            {cartItems.map((item) => (
+              <div
+                key={item.product.id}
+                className="flex items-start bg-[#e5e5e5] p-2 justify-between rounded-md border-b border-gray-400"
+              >
+                <Link
+                  to={`/products/${item.product.id}`}
+                  className="flex items-center mb-4 flex-grow"
+                >
+                  <div className="max-w-[200px]">
+                    <figure className="h-[8rem] w-[8rem] mr-4">
+                      <img
+                        src={item.product.product_image}
+                        alt={item.product.product_name}
+                        className="w-full h-full object-contain rounded"
+                      />
+                    </figure>
+                  </div>
 
-      <h2>Total sum: {totalSum}</h2>
-      <button onClick={initiatePayment}>Checkout</button>
+                  <div className="flex-grow">
+                    <h3 className="font-[600] text-[22px]">
+                      {item.product.product_name}
+                    </h3>
+                    <p className="my-[5px] text-gray-500 line-clamp-3">
+                      {item.product.description}
+                    </p>
+                    <p className="mb-[10px]">Quantity: {item.quantity}</p>
+                    <p className="font-[600]">₹{item.product.price}</p>
+                  </div>
+                </Link>
+
+                <button
+                  onClick={() => removeProduct(item.product.id)}
+                  className="mt-[10px] bg-red-600 text-white px-3 py-2 rounded-md"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <h3 className="text-center font-[600] text-[20px] mb-[20px]">
+              Checkout
+            </h3>
+
+            <p className="font-[600] text-[18px]">
+              Grand Total: <span>₹{totalSum}</span>
+            </p>
+
+            <button
+              onClick={initiatePayment}
+              className="bg-green-500 py-[5px] md:py-2 px-3 md:px-6 text-white text-[14px] md:text-[18px] font-[600] h-[44px] flex items-center justify-center rounded-[10px] w-full mt-[20px]"
+            >
+              Checkout
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -28,19 +28,19 @@ public class ProductDTO {
     @NotNull(message = "Product price is required")
     private Double price;
 
+    @NotNull(message = "Product image is required")
+    @NotBlank(message = "Product image cannot be blank")
+    private String product_image;
+
     @NotNull(message = "Product availability is required")
     private Boolean availability;
-
-    @NotNull(message = "Food type is required")
-    @NotBlank(message = "Food type cannot be blank")
-    private String food_type;
 
     public ProductDTO(Product product) {
         this.id = product.getId();
         this.product_name = product.getProduct_name();
+        this.product_image = product.getProduct_image();
         this.description = product.getDescription();
         this.price = product.getPrice();
-        this.food_type = product.getFood_type();
         this.availability = product.getAvailability();
     }
 }

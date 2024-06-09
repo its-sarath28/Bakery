@@ -1,8 +1,11 @@
 package com.backery.main.Controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,8 +32,6 @@ public class OrderController {
     public ResponseEntity<?> checkout() {
         try {
             OrderDTO order = orderService.createOrder();
-            // String razorpayOrderId =
-            // paymentService.createRazorpayOrder(order.getTotalAmount());
             return ResponseEntity.ok(new CheckoutResponse(order.getRazorpayOrderId(), order.getTotalAmount()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -55,5 +56,11 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new MessageResponse("Payment verification failed"));
         }
+    }
+
+    @GetMapping("")
+    public ResponseEntity<List<OrderDTO>> getCompletedOrders() {
+        List<OrderDTO> completedOrders = orderService.getCompletedOrdersForCurrentUser();
+        return ResponseEntity.ok(completedOrders);
     }
 }

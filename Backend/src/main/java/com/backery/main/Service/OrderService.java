@@ -76,4 +76,10 @@ public class OrderService {
         order.setStatus(status);
         orderRepository.save(order);
     }
+
+    public List<OrderDTO> getCompletedOrdersForCurrentUser() {
+        User user = userService.getCurrentUser();
+        List<Order> completedOrders = orderRepository.findByUserAndStatus(user, "COMPLETED");
+        return completedOrders.stream().map(OrderDTO::new).collect(Collectors.toList());
+    }
 }
